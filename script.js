@@ -1,4 +1,4 @@
-const API_KEY = "TON_API_KEY"; // ← Remplace par ta vraie clé TMDB
+const API_KEY = "8fe84dc6aac7423767ec7e65ea8670a9"; // ← Remplace par ta vraie clé TMDB
 
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
