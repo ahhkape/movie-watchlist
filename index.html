@@ -16,12 +16,19 @@
       <div id="searchResults"></div>
     </section>
 
-    <!-- Liste personnelle -->
-    <section id="list">
-      <h2>My list</h2>
-      <ul id="movieList"></ul>
-    </section>
-  </main>
+<!-- Liste personnelle -->
+<section id="list">
+  <h2>My list</h2>
+
+  <!-- Filtres -->
+  <div id="filters">
+    <button data-filter="all"   class="filter active">Tous</button>
+    <button data-filter="todo"  class="filter">À voir</button>
+    <button data-filter="seen"  class="filter">Vus ✓</button>
+  </div>
+
+  <ul id="movieList"></ul>
+</section>
 
   <script src="script.js"></script>
 </body>
