@@ -1,5 +1,3 @@
-// ===== Paramètres =====
-const API_KEY = "8fe84dc6aac7423767ec7e65ea8670a9";
 
 // ===== Sélecteurs =====
 const searchInput   = document.getElementById("searchInput");
