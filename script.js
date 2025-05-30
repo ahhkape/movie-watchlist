@@ -1,11 +1,15 @@
 // ─────────── Paramètres ───────────
-const API_KEY = "8fe84dc6aac7423767ec7e65ea8670a9";   // ← ta clé TMDB
+const API_KEY = "8fe84dc6aac7423767ec7e65ea8670a9";
 
 // ─────────── Sélecteurs DOM ───────────
 const searchInput   = document.getElementById("searchInput");
 const searchBtn     = document.getElementById("searchBtn");
 const searchResults = document.getElementById("searchResults");
-const movieList     = document.getElementById("movieList");
+
+const movieListEl   = document.getElementById("movieList");
+const filterBtns    = document.querySelectorAll(".filter");
+
+let currentFilter = "all";           // all | todo | seen
 
 // ─────────── Recherche TMDB ───────────
 searchBtn.addEventListener("click", () => {
@@ -42,53 +46,83 @@ function showSearch(movies) {
     searchResults.appendChild(div);
   });
 
-  // branche chaque bouton “Add to list”
   document.querySelectorAll(".add").forEach(btn =>
     btn.addEventListener("click", () => {
-      const movie = {
+      addToList({
         id:     btn.dataset.id,
         title:  btn.dataset.title,
         poster: btn.dataset.poster,
-        seen:   false               // champ qu’on utilisera plus tard
-      };
-      addToList(movie);
+        seen:   false
+      });
     })
   );
 }
 
-// ─────────── Gestion de la liste ───────────
-function loadList() {
-  return JSON.parse(localStorage.getItem("movieList") || "[]");
-}
+// ─────────── Persistence ───────────
+function loadList()  { return JSON.parse(localStorage.getItem("movieList") || "[]"); }
+function saveList(l) { localStorage.setItem("movieList", JSON.stringify(l)); }
 
-function saveList(list) {
-  localStorage.setItem("movieList", JSON.stringify(list));
-}
-
+// ─────────── Opérations sur la liste ───────────
 function addToList(movie) {
   const list = loadList();
-
-  // éviter les doublons
   if (list.some(m => m.id === movie.id)) return;
-
   list.push(movie);
   saveList(list);
   renderList();
 }
 
+function toggleSeen(id) {
+  const list = loadList().map(m => m.id === id ? { ...m, seen: !m.seen } : m);
+  saveList(list);
+  renderList();
+}
+
+function removeMovie(id) {
+  const list = loadList().filter(m => m.id !== id);
+  saveList(list);
+  renderList();
+}
+
+// ─────────── Rendu filtré ───────────
+filterBtns.forEach(btn =>
+  btn.addEventListener("click", () => {
+    filterBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;   // all | todo | seen
+    renderList();
+  })
+);
+
 function renderList() {
   const list = loadList();
-  movieList.innerHTML = "";
+  movieListEl.innerHTML = "";
 
-  list.forEach(m => {
+  const filtered = list.filter(m => {
+    if (currentFilter === "todo") return !m.seen;
+    if (currentFilter === "seen") return  m.seen;
+    return true; // all
+  });
+
+  filtered.forEach(m => {
     const li = document.createElement("li");
     li.innerHTML = `
       <img src="${m.poster}" width="40" alt="${m.title}">
-      ${m.title}
+      <span class="title">${m.title}</span>
+      <button class="toggle" data-id="${m.id}">${m.seen ? "↩️ À voir" : "✓ Vu"}</button>
+      <button class="del"    data-id="${m.id}">❌</button>
     `;
-    movieList.appendChild(li);
+    if (m.seen) li.querySelector(".title").classList.add("seen");
+    movieListEl.appendChild(li);
   });
+
+  // actions
+  movieListEl.querySelectorAll(".toggle").forEach(b =>
+    b.addEventListener("click", () => toggleSeen(b.dataset.id))
+  );
+  movieListEl.querySelectorAll(".del").forEach(b =>
+    b.addEventListener("click", () => removeMovie(b.dataset.id))
+  );
 }
 
-// ─────────── Affiche la liste au chargement ───────────
+// ─────────── Init ───────────
 renderList();
