@@ -13,6 +13,7 @@
     <section id="search">
       <input type="text" id="searchInput" placeholder="Search for a movie…">
       <button id="searchBtn">Search</button>
+      <div id="loader">Loading…</div>
       <div id="searchResults"></div>
     </section>
 
@@ -27,7 +28,9 @@
     <button data-filter="seen"  class="filter">Vus ✓</button>
   </div>
 
+  <p id="emptyMsg">Your watchlist is empty.</p>    <!-- ← AJOUT -->
   <ul id="movieList"></ul>
+
 </section>
 
   <script src="script.js"></script>
